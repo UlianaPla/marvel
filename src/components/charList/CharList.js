@@ -3,26 +3,51 @@ import { Component } from "react";
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import MarvelService from "../services/MarvelService";
-import abyss from "../../resources/img/abyss.jpg";
 
 class CharList extends Component {
   state = {
     chars: [],
     loading: true,
     error: false,
+    newItemLoading: false,
+    offset: 1562,
+    charEnded: false,
   };
 
   marvelService = new MarvelService();
 
   componentDidMount() {
-    this.updateList();
+    this.onRequest();
   }
 
-  onCharListLoaded = (chars) => {
+  onRequest = (offset) => {
+    this.onCharsLoading();
+
+    this.marvelService
+      .getAllCharacters(offset)
+      .then(this.onCharsLoaded)
+      .catch(this.onError);
+  };
+
+  onCharsLoading = () => {
     this.setState({
-      chars,
-      loading: false,
+      newItemLoading: true,
     });
+  };
+
+  onCharsLoaded = (newChars) => {
+    let ended = false;
+    if (newChars.length < 9) {
+      ended = true;
+    }
+
+    this.setState(({ offset, chars }) => ({
+      chars: [...chars, ...newChars],
+      loading: false,
+      newItemLoading: false,
+      offset: offset + 9,
+      charEnded: ended,
+    }));
   };
 
   onError = () => {
@@ -38,26 +63,17 @@ class CharList extends Component {
     });
   };
 
-  updateList = () => {
-    this.onUpdateStarted();
-
-    this.marvelService
-      .getAllCharacters()
-      .then(this.onCharListLoaded)
-      .catch(this.onError);
-  };
-
   // Этот метод создан для оптимизации,
   // чтобы не помещать такую конструкцию в метод render
   renderItems(arr) {
     const items = arr.map((item) => {
-      let imgStyle = { 'objectFit': 'cover' };
-  if (
-    item.thumbnail ===
-    "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg"
-  ) {
-    imgStyle = { 'objectFit': 'unset' };
-  }
+      let imgStyle = { objectFit: "cover" };
+      if (
+        item.thumbnail ===
+        "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg"
+      ) {
+        imgStyle = { objectFit: "unset" };
+      }
 
       return (
         <li
@@ -76,7 +92,8 @@ class CharList extends Component {
   }
 
   render() {
-    const { chars, loading, error } = this.state;
+    const { chars, loading, error, newItemLoading, offset, charEnded } =
+      this.state;
     const items = this.renderItems(chars);
     const errorMessage = error ? <ErrorMessage /> : null;
     const spinner = loading ? <Spinner /> : null;
@@ -87,7 +104,11 @@ class CharList extends Component {
         {errorMessage}
         {spinner}
         {content}
-        <button className="button button__main button__long">
+        <button
+          className="button button__main button__long"
+          disabled={newItemLoading} style={{'display' : charEnded ? 'none' : 'block'}}
+          onClick={() => this.onRequest(offset)}
+        >
           <div className="inner">load more</div>
         </button>
       </div>

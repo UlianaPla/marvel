@@ -5,6 +5,7 @@ class ErrorBoundary extends Component {
   state = {
     error: false,
   };
+  
   static getDerivedStateFromError(error) {
     return { error: true };
   }
