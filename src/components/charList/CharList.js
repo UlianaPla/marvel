@@ -4,30 +4,24 @@ import PropTypes from "prop-types";
 
 import Spinner from "../spinner/Spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
-import MarvelService from "../services/MarvelService";
+import useMarvelService from "../services/MarvelService";
 
 const CharList = (props) => {
   const [chars, setChars] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const [newItemLoading, setNewItemLoading] = useState(false);
   const [offset, setOffset] = useState(210);
   const [charEnded, setCharEnded] = useState(false);
 
-  const marvelService = new MarvelService();
+  const {loading, error, getAllCharacters} =  useMarvelService();
 
   useEffect(() => {
-    onRequest();
+    onRequest(offset, true);
   }, []); // [] - функция вьіполнится только один раз (imitation of ComponentDidMount)
 
-  const onRequest = (offset) => {
-    onCharsLoading();
+  const onRequest = (offset, initial) => {
+    initial ? setNewItemLoading(false) : setNewItemLoading(true);
 
-    marvelService.getAllCharacters(offset).then(onCharsLoaded).catch(onError);
-  };
-
-  const onCharsLoading = () => {
-    setNewItemLoading(true);
+    getAllCharacters(offset).then(onCharsLoaded);
   };
 
   const onCharsLoaded = (newChars) => {
@@ -37,15 +31,9 @@ const CharList = (props) => {
     }
 
     setChars((chars) => [...chars, ...newChars]);
-    setLoading((loading) => false);
     setNewItemLoading((newItemLoading) => false);
     setOffset((offset) => offset + 9);
     setCharEnded((charEnded) => ended);
-  };
-
-  const onError = () => {
-    setError(true);
-    setLoading((loading) => false);
   };
 
   const itemRefs = useRef([]);
@@ -100,19 +88,17 @@ const CharList = (props) => {
   const items = renderItems(chars);
 
   const errorMessage = error ? <ErrorMessage /> : null;
-  const spinner = loading ? <Spinner /> : null;
-  const content = !(loading || error) ? items : null;
-
+  const spinner = loading && !newItemLoading ? <Spinner /> : null;
   return (
     <div className="char__list">
       {errorMessage}
       {spinner}
-      {content}
+      {items}
       <button
         className="button button__main button__long"
         disabled={newItemLoading}
         style={{ display: charEnded ? "none" : "block" }}
-        onClick={() => onRequest(offset)}
+        onClick={() => onRequest(offset, false)}
       >
         <div className="inner">load more</div>
       </button>
