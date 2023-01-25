@@ -12,7 +12,7 @@ const CharList = (props) => {
   const [offset, setOffset] = useState(210);
   const [charEnded, setCharEnded] = useState(false);
 
-  const {loading, error, getAllCharacters} =  useMarvelService();
+  const { loading, error, getAllCharacters } = useMarvelService();
 
   useEffect(() => {
     onRequest(offset, true);
@@ -35,6 +35,8 @@ const CharList = (props) => {
     setOffset((offset) => offset + 9);
     setCharEnded((charEnded) => ended);
   };
+
+  console.log("charList!");
 
   const itemRefs = useRef([]);
 
