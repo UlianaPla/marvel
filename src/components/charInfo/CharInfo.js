@@ -6,11 +6,12 @@ import ErrorMessage from "../errorMessage/ErrorMessage";
 import Skeleton from "../skeleton/Skeleton";
 import "./charInfo.scss";
 import useMarvelService from "../services/MarvelService";
+import { NavLink } from "react-router-dom";
 
 const CharInfo = (props) => {
   const [char, setChar] = useState(null);
 
-  const {loading, error, getCharacter, clearError} = useMarvelService();
+  const { loading, error, getCharacter, clearError } = useMarvelService();
 
   useEffect(() => {
     updateChar();
@@ -30,7 +31,6 @@ const CharInfo = (props) => {
     setChar(char);
   };
 
-
   const skeleton = char || loading || error ? null : <Skeleton />;
   const errorMessage = error ? <ErrorMessage /> : null;
   const spinner = loading ? <Spinner /> : null;
@@ -48,7 +48,7 @@ const CharInfo = (props) => {
 
 const View = ({ char }) => {
   const { name, description, thumbnail, homepage, wiki, comics } = char;
-  
+
   let imgStyle = { objectFit: "cover" };
   if (
     thumbnail ===
@@ -79,9 +79,11 @@ const View = ({ char }) => {
         {comics.length > 0 ? null : "There is no comics with this character"}
 
         {comics.slice(0, 10).map((item, i) => {
+          const comicId = item.resourceURI.slice(item.resourceURI.indexOf('comics/') + 7);
+          console.log(comicId);
           return (
             <li key={i} className="char__comics-item">
-              {item.name}
+              <NavLink to={`/comics/${comicId}`}>{item.name}</NavLink>
             </li>
           );
         })}
