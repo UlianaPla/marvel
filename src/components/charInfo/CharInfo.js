@@ -80,7 +80,6 @@ const View = ({ char }) => {
 
         {comics.slice(0, 10).map((item, i) => {
           const comicId = item.resourceURI.slice(item.resourceURI.indexOf('comics/') + 7);
-          console.log(comicId);
           return (
             <li key={i} className="char__comics-item">
               <NavLink to={`/comics/${comicId}`}>{item.name}</NavLink>
