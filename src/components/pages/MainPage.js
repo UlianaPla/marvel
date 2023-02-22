@@ -20,7 +20,7 @@ const MainPage = () => {
     <>
       <Helmet>
         <meta name="description" content="Marvel information portal" />
-        <title>Marvel information</title>
+        <title>Marvel information portal</title>
       </Helmet>
       <ErrorBoundary>
         <RandomChar />
