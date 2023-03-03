@@ -1,7 +1,7 @@
 import "./charList.scss";
 import "./charList.css";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
 import PropTypes from "prop-types";
 import Spinner from "../spinner/Spinner";
@@ -72,6 +72,7 @@ const CharList = (props) => {
   // Этот метод создан для оптимизации,
   // чтобы не помещать такую конструкцию в метод render
   function renderItems(arr) {
+    console.log("render");
     const items = arr.map((item, i) => {
       let imgStyle = { objectFit: "cover" };
       if (
@@ -112,9 +113,13 @@ const CharList = (props) => {
       </TransitionGroup>
     );
   }
+  const elements = useMemo(() => {
+    return setContent(process, () => renderItems(chars), newItemLoading);
+  }, [process]);
+
   return (
     <div className="char__list">
-      {setContent(process, () => renderItems(chars), newItemLoading)}
+      {elements}
       <button
         className="button button__main button__long"
         disabled={newItemLoading}
