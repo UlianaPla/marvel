@@ -12,16 +12,12 @@ const setContent = (process, Component, newItemLoading) => {
   switch (process) {
     case "waiting":
       return <Spinner />;
-      break;
     case "loading":
       return newItemLoading ? <Component /> : <Spinner />;
-      break;
     case "confirmed":
       return <Component />;
-      break;
     case "error":
       return <ErrorMessage />;
-      break;
     default:
       throw new Error("Unexpected process state");
   }
@@ -37,6 +33,7 @@ const CharList = (props) => {
 
   useEffect(() => {
     onRequest(offset, true);
+     // eslint-disable-next-line 
   }, []); // [] - функция вьіполнится только один раз (imitation of ComponentDidMount)
 
   const onRequest = (offset, initial) => {
@@ -72,7 +69,6 @@ const CharList = (props) => {
   // Этот метод создан для оптимизации,
   // чтобы не помещать такую конструкцию в метод render
   function renderItems(arr) {
-    console.log("render");
     const items = arr.map((item, i) => {
       let imgStyle = { objectFit: "cover" };
       if (
@@ -115,6 +111,7 @@ const CharList = (props) => {
   }
   const elements = useMemo(() => {
     return setContent(process, () => renderItems(chars), newItemLoading);
+     // eslint-disable-next-line 
   }, [process]);
 
   return (
